@@ -273,7 +273,9 @@ def get_slice_mask_from_slice_contour_data(
         translated_contour_data = apply_transformation_to_3d_points(reshaped_contour_data, transformation_matrix)
         polygon = [np.around([translated_contour_data[:, :2]]).astype(np.int32)]
         polygon = np.array(polygon).squeeze()
-        polygons.append(polygon)
+        # only include if polygon consists of more than single point to avoid error in cv.fillPoly
+        if len(polygon.shape)==2:
+            polygons.append(polygon)
     slice_mask = create_empty_slice_mask(series_slice).astype(np.uint8)
     cv.fillPoly(img=slice_mask, pts = polygons, color = 1)
     return slice_mask
